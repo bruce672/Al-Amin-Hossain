@@ -378,6 +378,15 @@
     transition: var(--transition), box-shadow 0.2s;
   }
   .scroll-top-btn:hover { box-shadow: 0 6px 26px rgba(0,0,0,0.25); }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
 </style>
 </head>
 <body>
@@ -423,13 +432,13 @@
     </p>
 
     <div class="hero-buttons">
-      <a href="#" class="btn-connect">
+      <button onclick="openPopup()" class="btn-connect">
         <svg viewBox="0 0 24 24" stroke-width="2">
           <rect x="2" y="4" width="20" height="16" rx="2"/>
           <polyline points="2,6 12,13 22,6"/>
         </svg>
         Let's Connect
-      </a>
+      </button>
       <a href="#" class="btn-resume">
         <svg viewBox="0 0 24 24" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -439,6 +448,113 @@
         Resume
       </a>
     </div>
+
+    <!-- POPUP MODAL -->
+    <div id="contactPopup" onclick="handleOverlayClick(event)" style="
+      display:none; position:fixed; inset:0; z-index:999;
+      background:rgba(0,0,0,0.45); backdrop-filter:blur(4px);
+      align-items:center; justify-content:center;
+    ">
+      <div id="popupBox" style="
+        background:var(--card-bg); border-radius:28px;
+        padding:32px 28px 28px; max-width:340px; width:90%;
+        box-shadow:0 24px 60px rgba(0,0,0,0.2);
+        animation: popIn 0.25s cubic-bezier(.34,1.56,.64,1) both;
+        position:relative;
+      ">
+        <!-- Close -->
+        <button onclick="closePopup()" style="
+          position:absolute; top:16px; right:16px;
+          background:var(--bg); border:none; width:30px; height:30px;
+          border-radius:50%; cursor:pointer; font-size:16px;
+          color:var(--text-muted); display:flex; align-items:center; justify-content:center;
+        ">✕</button>
+
+        <!-- WhatsApp icon -->
+        <div id="popupHeader" style="text-align:center; margin-bottom:18px;">
+          <div style="
+            width:58px; height:58px; border-radius:50%;
+            background:#25D366; margin:0 auto 12px;
+            display:flex; align-items:center; justify-content:center;
+          ">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.119 1.524 5.847L.057 23.882l6.204-1.448A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.659-.51-5.179-1.397l-.371-.22-3.684.860.876-3.595-.242-.379A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+            </svg>
+          </div>
+          <h3 style="font-size:18px; font-weight:800; color:var(--text-primary); margin-bottom:6px;">Select Purpose</h3>
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.5;">How would you like to connect<br>with Alamin Hossain?</p>
+        </div>
+
+        <!-- Options -->
+        <div id="purposeButtons" style="display:flex; flex-direction:column; gap:12px;">
+
+          <!-- Business -->
+          <button onclick="goWhatsApp()" style="
+            background:#25D366; color:#fff; border:none;
+            border-radius:16px; padding:16px 20px;
+            display:flex; align-items:center; gap:14px;
+            cursor:pointer; text-align:left;
+            transition: transform 0.15s, box-shadow 0.15s;
+          "
+          onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(37,211,102,0.35)'"
+          onmouseout="this.style.transform='';this.style.boxShadow=''">
+            <div style="
+              width:38px; height:38px; border-radius:10px;
+              background:rgba(255,255,255,0.2);
+              display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;
+            ">💼</div>
+            <div>
+              <div style="font-size:15px; font-weight:700;">Business</div>
+              <div style="font-size:12px; opacity:0.85; margin-top:1px;">Projects, collaborations & work inquiries</div>
+            </div>
+            <svg style="margin-left:auto; flex-shrink:0;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+
+          <!-- Casual -->
+          <button onclick="showSorry()" style="
+            background:var(--bg); color:var(--text-primary); border:1.5px solid var(--hl-border);
+            border-radius:16px; padding:16px 20px;
+            display:flex; align-items:center; gap:14px;
+            cursor:pointer; text-align:left;
+            transition: transform 0.15s;
+          "
+          onmouseover="this.style.transform='translateY(-2px)'"
+          onmouseout="this.style.transform=''">
+            <div style="
+              width:38px; height:38px; border-radius:10px;
+              background:var(--hl-indigo);
+              display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;
+            ">💬</div>
+            <div>
+              <div style="font-size:15px; font-weight:700;">Casual</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:1px;">General chat & social conversations</div>
+            </div>
+            <svg style="margin-left:auto; flex-shrink:0;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+        <!-- SORRY SCREEN (hidden by default) -->
+        <div id="sorryScreen" style="display:none; text-align:center; padding:8px 0 4px; animation: popIn 0.3s ease both;">
+          <div style="font-size:52px; margin-bottom:14px;">😔</div>
+          <h3 style="font-size:18px; font-weight:800; color:var(--text-primary); margin-bottom:8px;">Sorry!</h3>
+          <p style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:24px;">
+            I'm not available for casual chat.<br>Please reach out for <strong style="color:var(--text-primary);">business purposes</strong> only.
+          </p>
+          <button onclick="backToOptions()" style="
+            background:var(--bg); color:var(--text-primary);
+            border:1.5px solid var(--hl-border);
+            border-radius:100px; padding:11px 26px;
+            font-family:'Inter',sans-serif; font-size:13px; font-weight:600;
+            cursor:pointer; transition:transform 0.15s;
+          "
+          onmouseover="this.style.transform='translateY(-2px)'"
+          onmouseout="this.style.transform=''">← Go Back</button>
+        </div>
+      </div>
+    </div>
+
+
 
     <!-- STATS -->
     <div class="stats-row">
@@ -516,6 +632,45 @@
     themeBtn.textContent = isDark ? '🌙' : '☀️';
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   });
+
+  // Popup logic
+  function openPopup() {
+    const popup = document.getElementById('contactPopup');
+    popup.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePopup() {
+    const popup = document.getElementById('contactPopup');
+    popup.style.display = 'none';
+    document.body.style.overflow = '';
+    // Reset to initial state
+    document.getElementById('sorryScreen').style.display = 'none';
+    document.getElementById('purposeButtons').style.display = 'flex';
+    document.getElementById('popupHeader').style.display = 'block';
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('contactPopup')) closePopup();
+  }
+
+  function goWhatsApp() {
+    closePopup();
+    window.open('https://wa.me/97466913669?text=Hello%20Alamin%2C%20I%20would%20like%20to%20discuss%20a%20business%20opportunity%20with%20you.', '_blank');
+  }
+
+  function showSorry() {
+    document.getElementById('purposeButtons').style.display = 'none';
+    document.getElementById('popupHeader').style.display = 'none';
+    const sorry = document.getElementById('sorryScreen');
+    sorry.style.display = 'block';
+  }
+
+  function backToOptions() {
+    document.getElementById('sorryScreen').style.display = 'none';
+    document.getElementById('purposeButtons').style.display = 'flex';
+    document.getElementById('popupHeader').style.display = 'block';
+  }
 </script>
 
 </body>
